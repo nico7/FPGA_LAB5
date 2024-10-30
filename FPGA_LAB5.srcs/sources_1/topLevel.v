@@ -145,5 +145,16 @@ output myParityCX
         end
     end
     
-    
+   img_processor(
+        .clk(clk),
+        .rst(rst),
+        .count(count),
+        .num_valid(number_valid),
+        .x_pos(x_pos),
+        .y_pos(y_pos),
+        .i_pixel(,
+        output [11:0] o_pixel,
+        output [15:0] wr_addr
+        );
+         
 endmodule
