@@ -48,44 +48,37 @@ output myParity,
 output myParityCX
 );
  
- parameter X_MAX = 10'h008;
- parameter Y_MAX = 10'h010;
  
- parameter X_OFFSET = 10'h028;
- parameter Y_OFFSET = 10'h025;
+ wire rst; // Output from debounce
  
  
- wire [3:0] count;
- wire rst;
- wire data_valid;
- wire number_valid;
+ wire [3:0] count; // Output from PS2
+ 
+ wire data_valid; // Output from PS2
+ wire number_valid; // Output from PS2
+ wire img_valid;  // Output from img_display
+ 
  reg [2:0]an;
- reg [11:0] addr;
- wire [23:0] data;
  
- wire [9:0] x_pos;
- wire [9:0] y_pos;
+ wire [15:0] addra;     // Output from img_display
+ wire [15:0] addrb;     // Output from img_processor
+ wire [7:0] data;       // Output from ROM
+ wire [7:0] proc_data_out;  // Output from img_processor
+ wire [7:0] proc_data_in;   // Output from img_processor
+ wire proc_w_rn;            // Output from img_processor
+ wire [9:0] x_pos;          // Output from vga_low_level
+ wire [9:0] y_pos;          // Output from vga_low_level
  
+ wire read_only;
+ 
+ assign read_only = 1'b0;
  assign {an_0, an_1, an_2} = an;
  
  always @(posedge clk) begin
     an <= 3'h7;
  end
  
- vga_top vga_ctrl(
- .clk(clk),
- .rst(rst),
- .pix_data(data),
- .x_pos(x_pos),
- .y_pos(y_pos),
- .count(count),
- .num_valid(number_valid),
- .vgaRed(vgaRed),
- .vgaGreen(vgaGreen),
- .vgaBlue(vgaBlue),
- .Hsync(Hsync),
- .Vsync(Vsync)
- );
+
  
  debounce debounce_btn(
     .clk(clk),
@@ -124,37 +117,53 @@ output myParityCX
     .o_parity_cx(myParityCX)
     );
     
+    vga_top vga_ctrl(
+    .clk(clk),
+    .rst(rst),
+    .i_img_valid(img_valid),
+    .pix_data(data),
+    .x_pos(x_pos),
+    .y_pos(y_pos),
+    .count(count),
+    .vgaRed(vgaRed),
+    .vgaGreen(vgaGreen),
+    .vgaBlue(vgaBlue),
+    .Hsync(Hsync),
+    .Vsync(Vsync)
+    );
+ 
+    img_display img_disp(
+    .clk(clk),
+    .rst(rst),
+    .x_pos(x_pos),
+    .y_pos(y_pos),
+    .o_addr(addra),
+    .o_img_valid(img_valid)
+    );
     
     blk_mem_gen_0 my_rom(
     .clka(clk),
-    .addra(addr),
-    .douta(data)
+    .addra(addra),
+    .dina(),
+    .douta(data),
+    .wea(read_only),
+    /// a↑↓b
+    .addrb(addrb),
+    .clkb(clk),
+    .dinb(proc_data_out),
+    .doutb(proc_data_in),
+    .web(proc_w_rn)
     );
-    
-    always @(posedge clk) begin
-        if(rst == 1'b1) begin
-            addr <= 0;
-        end
-        else if(data_valid == 1'b1) begin
-            if((x_pos - X_OFFSET < X_MAX)  && (y_pos - Y_OFFSET < Y_MAX)) begin
-                addr <= (count * 128) + (x_pos - X_OFFSET) + ((y_pos - Y_OFFSET) * 8);
-            end
-            else begin
-                addr <= 12'hFFF;
-            end
-        end
-    end
-    
+        
    img_processor(
         .clk(clk),
         .rst(rst),
         .count(count),
         .num_valid(number_valid),
-        .x_pos(x_pos),
-        .y_pos(y_pos),
-        .i_pixel(,
-        output [11:0] o_pixel,
-        output [15:0] wr_addr
+        .i_pixel(proc_data_in),
+        .o_pixel(proc_data_out),
+        .wr_addr(addrb),
+        .write_enable(proc_w_rn)
         );
          
 endmodule

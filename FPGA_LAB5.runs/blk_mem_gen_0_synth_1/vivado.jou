@@ -1,12 +1,24 @@
 #-----------------------------------------------------------
-# Vivado v2017.4 (64-bit)
-# SW Build 2086221 on Fri Dec 15 20:55:39 MST 2017
-# IP Build 2085800 on Fri Dec 15 22:25:07 MST 2017
-# Start of session at: Wed Oct 30 14:38:10 2024
-# Process ID: 1284
-# Current directory: C:/Users/ni920924/FPGA_LAB5/FPGA_LAB5.runs/blk_mem_gen_0_synth_1
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Sat Nov  2 04:16:43 2024
+# Process ID: 24828
+# Current directory: C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.runs/blk_mem_gen_0_synth_1
 # Command line: vivado.exe -log blk_mem_gen_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source blk_mem_gen_0.tcl
-# Log file: C:/Users/ni920924/FPGA_LAB5/FPGA_LAB5.runs/blk_mem_gen_0_synth_1/blk_mem_gen_0.vds
-# Journal file: C:/Users/ni920924/FPGA_LAB5/FPGA_LAB5.runs/blk_mem_gen_0_synth_1\vivado.jou
+# Log file: C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.runs/blk_mem_gen_0_synth_1/blk_mem_gen_0.vds
+# Journal file: C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.runs/blk_mem_gen_0_synth_1\vivado.jou
+# Running On        :LAPTOP-QJ9BJU4G
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :22631
+# Processor Detail  :13th Gen Intel(R) Core(TM) i9-13900HX
+# CPU Frequency     :2419 MHz
+# CPU Physical cores:24
+# CPU Logical cores :32
+# Host memory       :68446 MB
+# Swap memory       :4294 MB
+# Total Virtual     :72741 MB
+# Available Virtual :35443 MB
 #-----------------------------------------------------------
 source blk_mem_gen_0.tcl -notrace

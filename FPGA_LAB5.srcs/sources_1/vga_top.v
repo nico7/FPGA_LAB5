@@ -22,11 +22,11 @@
 module vga_top(
 input clk,
 input rst,
-input [23:0] pix_data,
+input i_img_valid,
+input [7:0] pix_data,
 output [9:0] x_pos,
 output [9:0] y_pos,
 input [3:0] count,
-input num_valid,
 output [3:0] vgaRed,
 output [3:0] vgaGreen,
 output [3:0] vgaBlue,
@@ -109,8 +109,8 @@ output Vsync
 //            img_data <= ~color;
 //        end
         else begin
-            if(num_valid == 1'b1) begin
-                img_data <= color ^ {pix_data[23:20], pix_data[15:12], pix_data[7:4]};
+            if(i_img_valid == 1'b1) begin
+                img_data <= color ^{pix_data[7:4], pix_data[7:4], pix_data[7:4]};
             end
             else begin
                 img_data <= color;
