@@ -9,7 +9,7 @@ output [3:0] count,
 output data_valid,
 output debug_data,
 output debug_clk,
-output [7:0] leds,
+
 output valid_number,
 output o_parity,
 output o_parity_cx
@@ -44,15 +44,12 @@ reg parity, parity_calc;
 
 reg debug_data_out;
 reg debug_clk_out;
-
-reg [7:0]led_data;
 reg num_valid;
 
 assign o_parity = parity;
 assign o_parity_cx = parity_calc;
 
 assign valid_number = num_valid;
-assign leds = led_data;
 
 assign data_valid = byte_valid;
 assign count = count_buffer;
@@ -88,7 +85,6 @@ always @(posedge clk) begin
         parity <= 1'b0;
         parity_calc <= 1'b0;
         count_buffer <= 4'h0;
-        led_data <= 8'h00;
         num_valid <= 1'b0;
     end
     else begin
@@ -173,7 +169,6 @@ always @(posedge clk) begin
                         else if(bit_count == 9) begin   // If the bit_count is 9, then we're looking at the parity bit
                              parity <= PS2Data;          // we save the parity bit
                              parity_calc <= ~(^data_byte[7:0]);  // we calculate the parity
-                             led_data <= data_byte;
                         end
                     end
                 end

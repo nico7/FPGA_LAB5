@@ -111,7 +111,6 @@ output myParityCX
     .data_valid(data_valid),
     .debug_data(debug_data),
     .debug_clk(debug_clk),
-    .leds(led),
     .valid_number(number_valid),
     .o_parity(myParity),
     .o_parity_cx(myParityCX)
@@ -155,7 +154,7 @@ output myParityCX
     .web(proc_w_rn)
     );
         
-   img_processor(
+   img_processor img_filt(
         .clk(clk),
         .rst(rst),
         .count(count),
@@ -163,7 +162,8 @@ output myParityCX
         .i_pixel(proc_data_in),
         .o_pixel(proc_data_out),
         .wr_addr(addrb),
-        .write_enable(proc_w_rn)
+        .write_enable(proc_w_rn),
+        .leds(led)
         );
          
 endmodule

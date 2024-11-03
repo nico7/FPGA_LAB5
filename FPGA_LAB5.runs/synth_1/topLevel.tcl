@@ -74,17 +74,18 @@ set_property ip_output_repo c:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
-add_files c:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/definition3_image2.coe
+add_files C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/definition3_image2.coe
 read_verilog -library xil_defaultlib {
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/debounce.v
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/new/img_display.v
+  C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/new/img_processor.v
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/ps2.v
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/sev_seg.v
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/vga_low_level.v
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/vga_top.v
   C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/topLevel.v
 }
-read_ip -quiet c:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/ip/blk_mem_gen_0_1/blk_mem_gen_0.xci
+read_ip -quiet C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/ip/blk_mem_gen_0_1/blk_mem_gen_0.xci
 set_property used_in_implementation false [get_files -all c:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.gen/sources_1/ip/blk_mem_gen_0_1/blk_mem_gen_0_ooc.xdc]
 
 OPTRACE "Adding files" END { }

@@ -1,0 +1,7 @@
++====================+===================+==========================+
+| Launch Setup Clock | Launch Hold Clock | Pin                      |
++====================+===================+==========================+
+| sys_clk_pin        | sys_clk_pin       | img_filt/accum_reg[16]/D |
+| sys_clk_pin        | sys_clk_pin       | img_filt/accum_reg[12]/D |
+| sys_clk_pin        | sys_clk_pin       | img_filt/accum_reg[14]/D |
++--------------------+-------------------+--------------------------+

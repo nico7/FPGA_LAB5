@@ -65,7 +65,7 @@ output Vsync
             case(count)
                 ZERO: 
                 begin
-                    color <= GRAY;
+                    color <= color;
                 end
                 ONE:
                 begin
@@ -94,6 +94,14 @@ output Vsync
                 SEVEN:
                 begin
                     color <= PINK;
+                end
+                EIGHT:
+                begin
+                    color <= GREEN ^ PINK;
+                end
+                NINE:
+                begin
+                    color <= BLEU ^ WHITE;
                 end
                 default:
                     color <= BLACK;

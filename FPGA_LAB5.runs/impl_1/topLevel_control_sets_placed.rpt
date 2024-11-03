@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
-| Date         : Sat Nov  2 04:43:35 2024
+| Date         : Sun Nov  3 01:36:54 2024
 | Host         : LAPTOP-QJ9BJU4G running 64-bit major release  (build 9200)
 | Command      : report_control_sets -verbose -file topLevel_control_sets_placed.rpt
 | Design       : topLevel
@@ -23,11 +23,11 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Total control sets                                       |    19 |
-|    Minimum number of control sets                        |    19 |
+| Total control sets                                       |    50 |
+|    Minimum number of control sets                        |    50 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |    96 |
+| Unused register locations in slices containing registers |   210 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -39,15 +39,15 @@ Table of Contents
 +--------------------+-------+
 |       Fanout       | Count |
 +--------------------+-------+
-| Total control sets |    19 |
-| >= 0 to < 4        |     8 |
+| Total control sets |    50 |
+| >= 0 to < 4        |    12 |
 | >= 4 to < 6        |     2 |
-| >= 6 to < 8        |     2 |
-| >= 8 to < 10       |     1 |
-| >= 10 to < 12      |     2 |
+| >= 6 to < 8        |    11 |
+| >= 8 to < 10       |    16 |
+| >= 10 to < 12      |     3 |
 | >= 12 to < 14      |     0 |
 | >= 14 to < 16      |     0 |
-| >= 16              |     4 |
+| >= 16              |     6 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
 
@@ -58,12 +58,12 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |              49 |           16 |
+| No           | No                    | No                     |              52 |           21 |
 | No           | No                    | Yes                    |               0 |            0 |
-| No           | Yes                   | No                     |              84 |           28 |
-| Yes          | No                    | No                     |              24 |            7 |
+| No           | Yes                   | No                     |              96 |           33 |
+| Yes          | No                    | No                     |             168 |           78 |
 | Yes          | No                    | Yes                    |               0 |            0 |
-| Yes          | Yes                   | No                     |              43 |           18 |
+| Yes          | Yes                   | No                     |             130 |           51 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
@@ -73,25 +73,56 @@ Table of Contents
 +-----------------------------+------------------------------------------+------------------------------------------+------------------+----------------+--------------+
 |         Clock Signal        |               Enable Signal              |             Set/Reset Signal             | Slice Load Count | Bel Load Count | Bels / Slice |
 +-----------------------------+------------------------------------------+------------------------------------------+------------------+----------------+--------------+
-|  clk_IBUF_BUFG              | kb/data_byte[1]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
-|  clk_IBUF_BUFG              | kb/data_byte[2]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
-|  clk_IBUF_BUFG              | kb/data_byte[3]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
-|  clk_IBUF_BUFG              | kb/data_byte[0]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
-|  clk_IBUF_BUFG              | kb/data_byte[6]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
-|  clk_IBUF_BUFG              | kb/data_byte[4]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/parity                                | debounce_btn/rst                         |                1 |              1 |         1.00 |
 |  clk_IBUF_BUFG              | kb/data_byte[5]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/data_byte[3]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/data_byte[6]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/data_byte[2]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | img_filt/debug_leds[2]_i_1_n_0           | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | img_filt/start_machine                   | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | img_filt/debug_leds[1]_i_1_n_0           | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/data_byte[4]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/data_byte[1]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG              | kb/data_byte[0]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
 |  clk_IBUF_BUFG              | kb/data_byte[7]                          | debounce_btn/rst                         |                1 |              1 |         1.00 |
 |  clk_IBUF_BUFG              | kb/bit_count                             | debounce_btn/rst                         |                1 |              4 |         4.00 |
-|  clk_IBUF_BUFG              | kb/count_buffer                          | debounce_btn/rst                         |                1 |              5 |         5.00 |
-|  clk_IBUF_BUFG              |                                          | kb/Q[3]                                  |                2 |              7 |         3.50 |
-|  clk_IBUF_BUFG              | kb/E[0]                                  | debounce_btn/rst                         |                2 |              7 |         3.50 |
-|  clk_IBUF_BUFG              | kb/led_data                              | debounce_btn/rst                         |                2 |              9 |         4.50 |
+|  clk_IBUF_BUFG              | kb/count_buffer                          | debounce_btn/rst                         |                3 |              5 |         1.67 |
+|  clk_IBUF_BUFG              | img_filt/cenL[14]_i_1_n_0                | img_filt/cenL[13]_i_1_n_0                |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/cenR[14]_i_1_n_0                | img_filt/cenR[13]_i_1_n_0                |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/topL[14]_i_1_n_0                | img_filt/topL[13]_i_1_n_0                |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/filter_type0                    | debounce_btn/rst                         |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/topR[14]_i_1_n_0                | img_filt/topR[13]_i_1_n_0                |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/center                          | img_filt/center[13]_i_1_n_0              |                3 |              6 |         2.00 |
+|  clk_IBUF_BUFG              | img_filt/top[14]_i_1_n_0                 | img_filt/top[13]_i_1_n_0                 |                2 |              6 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/bottom[14]_i_1_n_0              | img_filt/bottom[13]_i_1_n_0              |                1 |              6 |         6.00 |
+|  clk_IBUF_BUFG              | img_filt/botL[14]_i_1_n_0                | img_filt/botL[13]_i_1_n_0                |                1 |              6 |         6.00 |
+|  clk_IBUF_BUFG              | img_filt/botR[14]_i_1_n_0                | img_filt/botR[13]_i_1_n_0                |                3 |              6 |         2.00 |
+|  clk_IBUF_BUFG              | kb/E[0]                                  | debounce_btn/rst                         |                1 |              7 |         7.00 |
+|  clk_IBUF_BUFG              | kb/count_buffer_reg[0]_0[0]              |                                          |                2 |              8 |         4.00 |
+|  clk_IBUF_BUFG              | img_filt/x[7]_i_1_n_0                    | debounce_btn/rst                         |                2 |              8 |         4.00 |
+|  clk_IBUF_BUFG              | img_filt/y[7]_i_1_n_0                    | debounce_btn/rst                         |                2 |              8 |         4.00 |
+|  clk_IBUF_BUFG              | img_filt/y_offset[7]_i_1_n_0             |                                          |                2 |              8 |         4.00 |
+|  clk_IBUF_BUFG              | img_filt/mult[15]_i_1_n_0                |                                          |                3 |              8 |         2.67 |
+|  clk_IBUF_BUFG              | img_filt/output_byte[7]_i_1_n_0          |                                          |                6 |              8 |         1.33 |
+|  clk_IBUF_BUFG              |                                          | debounce_btn/SR[0]                       |                6 |              9 |         1.50 |
+|  clk_IBUF_BUFG              | img_filt/bottom[14]_i_1_n_0              |                                          |                5 |              9 |         1.80 |
+|  clk_IBUF_BUFG              | img_filt/top[14]_i_1_n_0                 |                                          |                3 |              9 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/center                          |                                          |                3 |              9 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/topR[14]_i_1_n_0                |                                          |                5 |              9 |         1.80 |
+|  clk_IBUF_BUFG              | img_filt/topL[14]_i_1_n_0                |                                          |                3 |              9 |         3.00 |
+|  clk_IBUF_BUFG              | img_filt/cenR[14]_i_1_n_0                |                                          |                6 |              9 |         1.50 |
+|  clk_IBUF_BUFG              | img_filt/cenL[14]_i_1_n_0                |                                          |                4 |              9 |         2.25 |
+|  clk_IBUF_BUFG              | img_filt/botR[14]_i_1_n_0                |                                          |                4 |              9 |         2.25 |
+|  clk_IBUF_BUFG              | img_filt/botL[14]_i_1_n_0                |                                          |                5 |              9 |         1.80 |
+|  vga_ctrl/vga_driver/p_1_in | vga_ctrl/vga_driver/hor_count[9]_i_1_n_0 | vga_ctrl/vga_driver/ver_count_0          |                4 |             10 |         2.50 |
+|  clk_IBUF_BUFG              | img_filt/x_offset[14]_i_1_n_0            |                                          |                4 |             10 |         2.50 |
 |  vga_ctrl/vga_driver/p_1_in |                                          | vga_ctrl/vga_driver/hor_count[9]_i_1_n_0 |                4 |             10 |         2.50 |
-|  vga_ctrl/vga_driver/p_1_in | vga_ctrl/vga_driver/hor_count[9]_i_1_n_0 | vga_ctrl/vga_driver/ver_count            |                4 |             10 |         2.50 |
-|  clk_IBUF_BUFG              |                                          | vga_ctrl/vga_driver/SR[0]                |                4 |             16 |         4.00 |
-|  clk_IBUF_BUFG              | debounce_btn/button_counter[23]_i_1_n_0  |                                          |                7 |             24 |         3.43 |
-|  clk_IBUF_BUFG              |                                          |                                          |               16 |             49 |         3.06 |
-|  clk_IBUF_BUFG              |                                          | debounce_btn/rst                         |               18 |             51 |         2.83 |
+|  clk_IBUF_BUFG              |                                          | debounce_btn/button_pressed_reg_0[0]     |                5 |             16 |         3.20 |
+|  clk_IBUF_BUFG              | img_filt/addr[15]_i_1_n_0                | debounce_btn/rst                         |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG              | img_filt/accum[20]_i_1_n_0               |                                          |               18 |             21 |         1.17 |
+|  clk_IBUF_BUFG              | debounce_btn/button_counter[23]_i_1_n_0  |                                          |                5 |             24 |         4.80 |
+|  clk_IBUF_BUFG              |                                          |                                          |               21 |             52 |         2.48 |
+|  clk_IBUF_BUFG              |                                          | debounce_btn/rst                         |               18 |             61 |         3.39 |
 +-----------------------------+------------------------------------------+------------------------------------------+------------------+----------------+--------------+
 
 

@@ -26,7 +26,7 @@ module img_display(
     input rst,
     input [9:0] x_pos,
     input [9:0] y_pos,
-    output [11:0] o_addr,
+    output [15:0] o_addr,
     output o_img_valid
     );
 
@@ -35,9 +35,6 @@ parameter Y_MAX = 10'h0FF;
  
 parameter X_OFFSET = 10'h028;
 parameter Y_OFFSET = 10'h025;
-    
-wire [15:0] o_addr;
-wire o_img_valid;
 
 reg [15:0] addr;
 reg img_valid;

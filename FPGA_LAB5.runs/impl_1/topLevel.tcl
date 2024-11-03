@@ -121,7 +121,7 @@ OPTRACE "set parameters" START { }
 OPTRACE "set parameters" END { }
 OPTRACE "add files" START { }
   add_files -quiet C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.runs/synth_1/topLevel.dcp
-  read_ip -quiet c:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/ip/blk_mem_gen_0_1/blk_mem_gen_0.xci
+  read_ip -quiet C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/sources_1/ip/blk_mem_gen_0_1/blk_mem_gen_0.xci
 OPTRACE "read constraints: implementation" START { }
   read_xdc C:/Users/Nico/Documents/Projects/Firmware/FPGA_LAB5/FPGA_LAB5.srcs/constrs_1/pinout.xdc
 OPTRACE "read constraints: implementation" END { }
