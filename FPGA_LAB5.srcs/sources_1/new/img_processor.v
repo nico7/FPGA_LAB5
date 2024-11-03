@@ -62,13 +62,21 @@ module img_processor(
     parameter CLK_THRESH = 8'h40;
     
     parameter FIFTY_SEVEN = 8'h39;
+    parameter EIGHTY_FIVE = 8'h55;
+    
+    parameter NINTH = 2'h0;
+    parameter FOURTH = 2'h1;
+    parameter SIXTH = 2'h2;
     
     reg we;
     reg start_machine;
     reg [2:0] state;
     reg [3:0] filter_type;
+    
+    reg [2:0] divide_type;  // corners 1/4, edges 1/6, others 1/9
     reg [7:0] x;    // center pixel coordenates
     reg [7:0] y;    // center pixel coordenates
+    
     reg [7:0] f_x;  // filter_pixel coordenates
     reg [7:0] f_y;  // filter_pixel coordenates
     
@@ -83,6 +91,8 @@ module img_processor(
     reg [15:0] botL;
     reg [15:0] bottom;
     reg [15:0] botR;
+    
+    reg [20:0] accum;
     
     reg [8:0]  clk_count; // we are going to need 18 cycles to retreive each ( = 9 x3 ) pixel of the kernel 
                           // + 1 for calculating each address + n for the actual filtering
@@ -131,6 +141,7 @@ module img_processor(
             state <= STATE_IDLE;
             addr <= 16'h0000;
             filter_type <= TYPE_4_TL;
+            divide_type <= FOURTH;
             x <= 8'h0;
             y <= 8'h0;
             we <= READ;
@@ -199,35 +210,45 @@ module img_processor(
             if(x == BEGINNING) begin    // If it's the first pixel of the row
                 if(y == BEGINNING) begin       // If it's on the top row
                     filter_type <= TYPE_4_TL;
+                    divide_type <= FOURTH;
                 end
                 else if (y == ENDING) begin  // If it's on the last row
                     filter_type <= TYPE_4_BL;
+                    divide_type <= FOURTH;
                 end
                 else begin                  // If it's somewhere in the middle of the 1st column
                     filter_type <= TYPE_6V_LEFT;
+                    divide_type <= SIXTH;
                 end
             end
             else if( x == ENDING) begin  // If it's the last pixel of the row
                 if(y == BEGINNING) begin    // If it's on the top row
                     filter_type <= TYPE_4_TR;
+                    divide_type <= FOURTH;
                 end
                 else if (y == ENDING) begin    // If it's on the bottom row
                     filter_type <= TYPE_4_BR;
+                    divide_type <= FOURTH;
                 end
                 else begin                  // If it's somwehere in the middle of the last column
                     filter_type <= TYPE_6V_RIGHT;
+                    divide_type <= SIXTH;
                 end
             end
             else if (y == BEGINNING) begin
                 filter_type <= TYPE_6H_TOP;
+                divide_type <= SIXTH;
             end
             else if (y  == ENDING) begin
-                filter_type <= TYPE_6H_BOT; 
+                filter_type <= TYPE_6H_BOT;
+                divide_type <= SIXTH; 
             end
             else begin
                 filter_type <= TYPE_9;
+                divide_type <= NINTH;
             end
         end
+        // Top Left
         8'h01:  // Start fitst stage of calculating for Top Left
         begin         
             we <= READ;
@@ -259,10 +280,19 @@ module img_processor(
         begin                 
             if((filter_type == TYPE_9 ) || (filter_type == TYPE_6H_BOT ) || 
                (filter_type == TYPE_4_BR ) || (filter_type == TYPE_6V_RIGHT )) begin
-                            
-                topL <= i_pixel *  FIFTY_SEVEN;
+                
+                if(divide_type == NINTH) begin  
+                    topL <= i_pixel *  FIFTY_SEVEN;
+                end
+                else if(divide_type == SIXTH) begin
+                    topL <= i_pixel * EIGHTY_FIVE;
+                end
+                else begin
+                    topL <= i_pixel;
+                end
             end
         end
+        // Top center
         8'h07: // Start first stage of calculating for top center
         begin
             if((filter_type == TYPE_9 ) || (filter_type == TYPE_4_BL ) || (filter_type == TYPE_4_BR ) || 
@@ -291,10 +321,18 @@ module img_processor(
         begin
             if((filter_type == TYPE_9 ) || (filter_type == TYPE_4_BL ) || (filter_type == TYPE_4_BR ) || 
                (filter_type == TYPE_6V_LEFT ) || (filter_type == TYPE_6V_RIGHT ) || (filter_type == TYPE_6H_BOT )) begin
-                
-                top <= i_pixel * FIFTY_SEVEN;
+                if(divide_type == NINTH) begin
+                    top <= i_pixel * FIFTY_SEVEN;
+                end
+                else if(divide_type == SIXTH) begin
+                    top <= i_pixel * EIGHTY_FIVE;
+                end
+                else begin
+                    top <= 
+                end
             end
         end
+        // Top right
         8'h0D:  // Start first stage of calculating for top right
         begin
             if((filter_type == TYPE_9) || (filter_type == TYPE_4_BL) || (filter_type == TYPE_6H_BOT) || 
@@ -320,8 +358,210 @@ module img_processor(
             end
         8'h12:  // wait for 2 cycles to happen before getting the data
         begin
-            topR <= i_pixel * FIFTY_SEVEN;
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_BL) || (filter_type == TYPE_6H_BOT) || 
+               (filter_type == TYPE_6V_LEFT)) begin
+                
+                topR <= i_pixel * FIFTY_SEVEN;
+            end
         end
+        // Center left
+        8'h13:  // Start first stage of calculating for left center
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_BL) || (filter_type == TYPE_4_BR) || 
+               (filter_type == TYPE_6V_RIGHT) || (filter_type == TYPE_6H_BOT)) begin
+               
+               x_offset <= x - 1;
+               mult <= y * 256;
+            end
+        end
+        8'h14:  // final stage of address calculation
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_BL) || (filter_type == TYPE_4_BR) || 
+               (filter_type == TYPE_6V_RIGHT) || (filter_type == TYPE_6H_BOT)) begin
+               
+               addr <= x_offset + mult;
+            end
+        end
+        8'h17:  // wait for 2 cycles to happen before getting the data
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_BL) || (filter_type == TYPE_4_BR) || 
+               (filter_type == TYPE_6V_RIGHT) || (filter_type == TYPE_6H_BOT)) begin
+               
+               cenL <= i_pixel * FIFTY_SEVEN;
+            end
+        end
+        // Center
+        8'h18:  // Start first stage of calculating for center
+        begin
+            mult <= y * 256;
+        end
+        8'h19:// final stage of address calculation
+        begin
+            addr <= x + mult;
+        end
+        8'h1C:
+        begin
+            center <= i_pixel * FIFTY_SEVEN;
+        end
+        // Center right
+        8'h1D:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_BL) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6H_BOT)) begin
+                
+               x_offset <= x + 1;
+               mult <= y * 256;
+            end
+        end
+        8'h1E:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_BL) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6H_BOT)) begin
+               
+                addr <= x_offset + mult;  
+            end
+        end
+        8'h21:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_BL) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6H_BOT)) begin
+               
+                cenR <= i_pixel * FIFTY_SEVEN;
+            end
+        end
+        // Bottom left
+        8'h22:
+        begin
+            if((filter_type == TYPE_4_TR ) || (filter_type == TYPE_6V_RIGHT ) || (filter_type == TYPE_9 ) || 
+            (filter_type == TYPE_6H_TOP )) begin
+            
+                x_offset <= x - 1;
+                y_offset <= y + 1;
+            end
+        end
+        8'h23:
+        begin
+            if((filter_type == TYPE_4_TR ) || (filter_type == TYPE_6V_RIGHT ) || (filter_type == TYPE_9 ) || 
+            (filter_type == TYPE_6H_TOP )) begin
+            
+                mult <= y_offset * 256;
+            end
+        end
+        8'h24:
+        begin
+            if((filter_type == TYPE_4_TR ) || (filter_type == TYPE_6V_RIGHT ) || (filter_type == TYPE_9 ) || 
+            (filter_type == TYPE_6H_TOP )) begin
+            
+                addr <= x_offset + mult;
+            end
+        end
+        8'h27:
+        begin
+            if((filter_type == TYPE_4_TR ) || (filter_type == TYPE_6V_RIGHT ) || (filter_type == TYPE_9 ) || 
+            (filter_type == TYPE_6H_TOP )) begin
+            
+                botR <= i_pixel * FIFTY_SEVEN;
+            end
+        end
+        // Bottom center
+        8'h28:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_TR) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6V_RIGHT)) begin
+               
+               y_offset <= y + 1;
+            end
+        end
+        8'h29:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_TR) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6V_RIGHT)) begin
+               
+               mult <= y_offset * 256;
+            end
+        end
+        8'h2A:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_TR) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6V_RIGHT)) begin
+               
+               addr <= x_offset + mult;
+            end
+        end
+        8'h2D:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_4_TR) || 
+               (filter_type == TYPE_6H_TOP) || (filter_type == TYPE_6V_LEFT) || (filter_type == TYPE_6V_RIGHT)) begin
+               
+               bottom <= i_pixel * FIFTY_SEVEN;
+            end
+        end
+        // Bottom right
+        8'h2B:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_6H_TOP) || 
+               (filter_type == TYPE_6V_LEFT)) begin
+               
+               x_offset <= x + 1;
+               y_offset <= y + 1;
+            end
+        end
+        8'h2C:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_6H_TOP) || 
+               (filter_type == TYPE_6V_LEFT)) begin
+               
+               mult <= y_offset * 256;
+            end        
+        end
+        8'h2E:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_6H_TOP) || 
+               (filter_type == TYPE_6V_LEFT)) begin
+               
+               addr <= x_offset + mult;
+            end       
+        end
+        8'h31:
+        begin
+            if((filter_type == TYPE_9) || (filter_type == TYPE_4_TL) || (filter_type == TYPE_6H_TOP) || 
+               (filter_type == TYPE_6V_LEFT)) begin
+               
+               botR <= i_pixel * FIFTY_SEVEN;
+            end        
+        end
+        8'h32:
+            case(filter_type)
+            TYPE_4_TL:
+            begin
+                accum <= center + cenR + bottom + botR;
+            end
+            TYPE_4_TR:
+            begin
+                accum <= 
+            end
+            TYPE_4_BL:
+            begin
+            end
+            TYPE_4_BR:
+            begin
+            end
+            TYPE_9:
+            begin
+            end
+            TYPE_6H_TOP:
+            begin
+            end
+            TYPE_6H_BOT:
+            begin
+            end
+            TYPE_6V_LEFT:
+            begin
+            end
+            TYPE_6V_RIGHT:
+            begin
+            end
+            endcase
         default:
         begin
         end
